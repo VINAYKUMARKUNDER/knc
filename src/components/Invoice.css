@@ -1,0 +1,42 @@
+/* File: src/components/Invoice.css */
+.invoice-box {
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #000;
+  background: #fff;
+  width: 100%;
+  max-width: 960px;
+  margin: auto;
+}
+
+.invoice-box input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  outline: none;
+}
+
+.invoice-box table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoice-box table th,
+.invoice-box table td {
+  border: 1px solid #000;
+  padding: 8px;
+  text-align: center;
+}
+
+.invoice-box .text-end {
+  text-align: right;
+}
+
+.invoice-box .text-center {
+  text-align: center;
+}
+
+.invoice-box .fw-bold {
+  font-weight: bold;
+}
