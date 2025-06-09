@@ -266,6 +266,7 @@ const Invoice = () => {
                     updatedProduct.taxableValue = roundToNextWhole(qty * rate);
                 }
 
+                
                 return updatedProduct;
             }
             return product;
