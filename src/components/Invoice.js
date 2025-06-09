@@ -1,574 +1,13 @@
-// import React, { useState } from 'react';
-// import { Plus, Trash2, Download } from 'lucide-react';
-
-// const Invoice = () => {
-//   const [companyName, setCompanyName] = useState('KUNDER & COMPANY');
-
-//   const [companyDetails, setCompanyDetails] = useState({
-//     gstin: '09DULPS6670G2ZV',
-//     address: '481/B Chak Dondi, Naini, Prayagraj U. P. India- 211008',
-//     mobile: '9198152715',
-//     business: 'Deals in : All Type Of Mills, Machinary & Spare Parts Sales & Service'
-//   });
-
-//   const [customerDetails, setCustomerDetails] = useState({
-//     name: '',
-//     address: '',
-//     mobile: '',
-//     gstin: '',
-//     state: '',
-//     stateCode: '',
-//     placeOfSupply: ''
-//   });
-
-//   const [invoiceDetails, setInvoiceDetails] = useState({
-//     invoiceNo: '',
-//     invoiceDate: '',
-//     stateCode: '09'
-//   });
-
-//   const [products, setProducts] = useState([
-//     { id: 1, particulars: '', hsnCode: '', qty: '', rate: '', taxableValue: '' }
-//   ]);
-
-//   const [taxDetails, setTaxDetails] = useState({
-//     cgstRate: 9,
-//     sgstRate: 9
-//   });
-
-//   const [bankDetails, setBankDetails] = useState({
-//     bankName: 'Yes Bank',
-//     accountNo: '',
-//     ifscCode: ''
-//   });
-
-//   const addProduct = () => {
-//     const newProduct = {
-//       id: Date.now(),
-//       particulars: '',
-//       hsnCode: '',
-//       qty: '',
-//       rate: '',
-//       taxableValue: ''
-//     };
-//     setProducts([...products, newProduct]);
-//   };
-
-//   const removeProduct = (id) => {
-//     if (products.length > 1) {
-//       setProducts(products.filter(product => product.id !== id));
-//     }
-//   };
-
-//   const updateProduct = (id, field, value) => {
-//     setProducts(products.map(product => 
-//       product.id === id ? { ...product, [field]: value } : product
-//     ));
-//   };
-
-//   const calculateTotals = () => {
-//     const totalAmount = products.reduce((sum, product) => {
-//       return sum + (parseFloat(product.taxableValue) || 0);
-//     }, 0);
-
-//     const cgstAmount = (totalAmount * taxDetails.cgstRate) / 100;
-//     const sgstAmount = (totalAmount * taxDetails.sgstRate) / 100;
-//     const totalWithTax = totalAmount + cgstAmount + sgstAmount;
-
-//     return { totalAmount, cgstAmount, sgstAmount, totalWithTax };
-//   };
-
-//   const { totalAmount, cgstAmount, sgstAmount, totalWithTax } = calculateTotals();
-
-//   const generatePDF = () => {
-//     if (!window.html2pdf) {
-//       const script = document.createElement('script');
-//       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-//       script.onload = () => {
-//         generatePDFContent();
-//       };
-//       document.head.appendChild(script);
-//     } else {
-//       generatePDFContent();
-//     }
-//   };
-
-//   const generatePDFContent = () => {
-//     const element = document.getElementById('invoice-content');
-//     const opt = {
-//     //   margin: [0.3, 0.3, 0.3, 0.3],
-//       filename: `Invoice_${invoiceDetails.invoiceNo || 'draft'}.pdf`,
-//       image: { type: 'jpeg', quality: 0.98 },
-//       html2canvas: { 
-//         scale: 1, 
-//         useCORS: true,
-//         letterRendering: true,
-//         allowTaint: false
-//       },
-//       jsPDF: { 
-//         unit: 'in', 
-//         format: 'a4', 
-//         orientation: 'portrait',
-//         compress: true
-//       }
-//     };
-
-//     window.html2pdf().set(opt).from(element).save();
-//   };
-
-//   return (
-//     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px', backgroundColor: '#f5f5f5' }}>
-//       {/* Controls */}
-//       <div style={{ 
-//         backgroundColor: 'white', 
-//         padding: '20px', 
-//         borderRadius: '8px', 
-//         boxShadow: '0 2px 4px rgba(0,0,0,0.1)', 
-//         marginBottom: '20px' 
-//       }}>
-//         <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '15px' }}>Invoice Controls</h2>
-//         <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
-//           <button 
-//             onClick={generatePDF} 
-//             style={{
-//               backgroundColor: '#2563eb',
-//               color: 'white',
-//               padding: '10px 20px',
-//               border: 'none',
-//               borderRadius: '6px',
-//               cursor: 'pointer',
-//               display: 'flex',
-//               alignItems: 'center',
-//               gap: '8px',
-//               fontSize: '14px'
-//             }}
-//           >
-//             <Download size={16} />
-//             Generate PDF
-//           </button>
-//           <button 
-//             onClick={addProduct}
-//             style={{
-//               backgroundColor: '#10b981',
-//               color: 'white',
-//               padding: '10px 20px',
-//               border: 'none',
-//               borderRadius: '6px',
-//               cursor: 'pointer',
-//               display: 'flex',
-//               alignItems: 'center',
-//               gap: '8px',
-//               fontSize: '14px'
-//             }}
-//           >
-//             <Plus size={16} />
-//             Add Product Row
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Invoice */}
-//       <div 
-//         id="invoice-content" 
-//         style={{
-//           backgroundColor: 'white',
-//           padding: '15px',
-//           border: '2px solid black',
-//           fontFamily: 'Arial, sans-serif',
-//           fontSize: '11px',
-//           lineHeight: '1.2',
-//           width: '210mm',
-//           minHeight: '297mm',
-//           boxSizing: 'border-box'
-//         }}
-//       >
-//         {/* Header with GSTIN, TAX INVOICE, Mobile */}
-//         <div style={{ 
-//           display: 'flex', 
-//           justifyContent: 'space-between', 
-//           alignItems: 'center',
-//           marginBottom: '10px',
-//           fontSize: '12px'
-//         }}>
-//           <div>
-//             <strong>GSTN No.: </strong>
-//             <input
-//               type="text"
-//               value={companyDetails.gstin}
-//               onChange={(e) => setCompanyDetails({...companyDetails, gstin: e.target.value})}
-//               style={{ 
-//                 border: 'none', 
-//                 background: 'transparent', 
-//                 fontWeight: 'bold',
-//                 fontSize: '12px',
-//                 width: '150px'
-//               }}
-//             />
-//           </div>
-//           <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
-//             TAX INVOICE
-//           </div>
-//           <div>
-//             <strong>Mob: </strong>
-//             <input
-//               type="text"
-//               value={companyDetails.mobile}
-//               onChange={(e) => setCompanyDetails({...companyDetails, mobile: e.target.value})}
-//               style={{ 
-//                 border: 'none', 
-//                 background: 'transparent', 
-//                 fontWeight: 'bold',
-//                 fontSize: '12px',
-//                 width: '100px'
-//               }}
-//             />
-//           </div>
-//         </div>
-
-//         {/* Company Name - Large and Bold */}
-//         <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-//           <input
-//             type="text"
-//             value={companyName}
-//             onChange={(e) => setCompanyName(e.target.value)}
-//             style={{
-//               fontSize: '28px',
-//               fontWeight: 'bold',
-//               textAlign: 'center',
-//               border: 'none',
-//               background: 'transparent',
-//               width: '100%',
-//               letterSpacing: '2px'
-//             }}
-//           />
-//         </div>
-
-//         {/* Address and Business */}
-//         <div style={{ textAlign: 'center', marginBottom: '12px', fontSize: '10px' }}>
-//           <div style={{ marginBottom: '3px' }}>
-//             <input
-//               type="text"
-//               value={companyDetails.address}
-//               onChange={(e) => setCompanyDetails({...companyDetails, address: e.target.value})}
-//               style={{ 
-//                 border: 'none', 
-//                 background: 'transparent', 
-//                 textAlign: 'center',
-//                 width: '100%',
-//                 fontSize: '10px'
-//               }}
-//             />
-//           </div>
-//           <div>
-//             <input
-//               type="text"
-//               value={companyDetails.business}
-//               onChange={(e) => setCompanyDetails({...companyDetails, business: e.target.value})}
-//               style={{ 
-//                 border: 'none', 
-//                 background: 'transparent', 
-//                 textAlign: 'center',
-//                 width: '100%',
-//                 fontSize: '10px'
-//               }}
-//             />
-//           </div>
-//         </div>
-
-//         {/* Invoice Details Row */}
-//         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '8px' }}>
-//           <tr>
-//             <td style={{ 
-//               border: '1px solid black', 
-//               padding: '4px', 
-//               fontSize: '9px',
-//               width: '25%'
-//             }}>
-//               <div><strong>GSTIN No.: {companyDetails.gstin}</strong></div>
-//               <div style={{ marginTop: '2px' }}><strong>State Code: {invoiceDetails.stateCode}</strong></div>
-//             </td>
-//             <td style={{ 
-//               border: '1px solid black', 
-//               padding: '4px', 
-//               fontSize: '9px',
-//               width: '25%'
-//             }}>
-//               <input
-//                 type="text"
-//                 value={invoiceDetails.invoiceNo}
-//                 onChange={(e) => setInvoiceDetails({...invoiceDetails, invoiceNo: e.target.value})}
-//                 placeholder="Invoice No."
-//                 style={{ 
-//                   width: '100%', 
-//                   border: 'none', 
-//                   fontSize: '9px',
-//                   marginBottom: '2px'
-//                 }}
-//               />
-//               <div>Tax Invoice No.:</div>
-//             </td>
-//             <td style={{ 
-//               border: '1px solid black', 
-//               padding: '4px', 
-//               fontSize: '9px',
-//               width: '25%'
-//             }}>
-//               <input
-//                 type="date"
-//                 value={invoiceDetails.invoiceDate}
-//                 onChange={(e) => setInvoiceDetails({...invoiceDetails, invoiceDate: e.target.value})}
-//                 style={{ 
-//                   width: '100%', 
-//                   border: 'none', 
-//                   fontSize: '9px',
-//                   marginBottom: '2px'
-//                 }}
-//               />
-//               <div>Invoice Date</div>
-//             </td>
-//             <td style={{ 
-//               border: '1px solid black', 
-//               padding: '4px', 
-//               fontSize: '9px',
-//               width: '25%'
-//             }}>
-//               <input
-//                 type="text"
-//                 value={customerDetails.mobile}
-//                 onChange={(e) => setCustomerDetails({...customerDetails, mobile: e.target.value})}
-//                 placeholder="Mobile No."
-//                 style={{ 
-//                   width: '100%', 
-//                   border: 'none', 
-//                   fontSize: '9px',
-//                   marginBottom: '2px'
-//                 }}
-//               />
-//               <div>Mobile No.:</div>
-//             </td>
-//           </tr>
-//         </table>
-
-//         {/* Invoice to (Customer Details) */}
-//         <div style={{ border: '1px solid black', marginBottom: '8px' }}>
-//           <div style={{ 
-//             backgroundColor: '#f0f0f0', 
-//             padding: '4px', 
-//             fontSize: '10px', 
-//             fontWeight: 'bold',
-//             borderBottom: '1px solid black'
-//           }}>
-//             Invoice to (Details of Receiver)
-//           </div>
-//           <div style={{ padding: '6px', fontSize: '9px' }}>
-//             <div style={{ display: 'flex', marginBottom: '3px' }}>
-//               <span style={{ fontWeight: 'bold', width: '60px' }}>Name</span>
-//               <span style={{ marginRight: '10px' }}>:</span>
-//               <input
-//                 type="text"
-//                 value={customerDetails.name}
-//                 onChange={(e) => setCustomerDetails({...customerDetails, name: e.target.value})}
-//                 style={{ 
-//                   flex: 1, 
-//                   border: 'none', 
-//                   fontSize: '9px',
-//                   borderBottom: '1px dotted #ccc'
-//                 }}
-//               />
-//               <span style={{ fontWeight: 'bold', marginLeft: '20px', width: '60px' }}>GSTIN:</span>
-//               <input
-//                 type="text"
-//                 value={customerDetails.gstin}
-//                 onChange={(e) => setCustomerDetails({...customerDetails, gstin: e.target.value})}
-//                 style={{ 
-//                   width: '120px', 
-//                   border: 'none', 
-//                   fontSize: '9px',
-//                   borderBottom: '1px dotted #ccc'
-//                 }}
-//               />
-//             </div>
-//             <div style={{ display: 'flex', marginBottom: '3px' }}>
-//               <span style={{ fontWeight: 'bold', width: '60px' }}>ADDRESS</span>
-//               <span style={{ marginRight: '10px' }}>:</span>
-//               <input
-//                 type="text"
-//                 value={customerDetails.address}
-//                 onChange={(e) => setCustomerDetails({...customerDetails, address: e.target.value})}
-//                 style={{ 
-//                   flex: 1, 
-//                   border: 'none', 
-//                   fontSize: '9px',
-//                   borderBottom: '1px dotted #ccc'
-//                 }}
-//               />
-//               <span style={{ fontWeight: 'bold', marginLeft: '20px', width: '60px' }}>State:</span>
-//               <input
-//                 type="text"
-//                 value={customerDetails.state}
-//                 onChange={(e) => setCustomerDetails({...customerDetails, state: e.target.value})}
-//                 style={{ 
-//                   width: '80px', 
-//                   border: 'none', 
-//                   fontSize: '9px',
-//                   borderBottom: '1px dotted #ccc'
-//                 }}
-//               />
-//               <span style={{ fontWeight: 'bold', marginLeft: '10px' }}>State Code:</span>
-//               <input
-//                 type="text"
-//                 value={customerDetails.stateCode}
-//                 onChange={(e) => setCustomerDetails({...customerDetails, stateCode: e.target.value})}
-//                 style={{ 
-//                   width: '40px', 
-//                   border: 'none', 
-//                   fontSize: '9px',
-//                   borderBottom: '1px dotted #ccc'
-//                 }}
-//               />
-//             </div>
-//             <div style={{ display: 'flex' }}>
-//               <span style={{ fontWeight: 'bold', width: '100px' }}>Place of Supply:</span>
-//               <input
-//                 type="text"
-//                 value={customerDetails.placeOfSupply}
-//                 onChange={(e) => setCustomerDetails({...customerDetails, placeOfSupply: e.target.value})}
-//                 style={{ 
-//                   flex: 1, 
-//                   border: 'none', 
-//                   fontSize: '9px',
-//                   borderBottom: '1px dotted #ccc'
-//                 }}
-//               />
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Products Table */}
-//         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '8px' }}>
-//           <thead>
-//             <tr>
-//               <th style={{ border: '1px solid black', padding: '4px', fontSize: '9px', fontWeight: 'bold', width: '8%' }}>SL. No.</th>
-//               <th style={{ border: '1px solid black', padding: '4px', fontSize: '9px', fontWeight: 'bold', width: '40%' }}>PRITICULARS</th>
-//               <th style={{ border: '1px solid black', padding: '4px', fontSize: '9px', fontWeight: 'bold', width: '12%' }}>HSN Code</th>
-//               <th style={{ border: '1px solid black', padding: '4px', fontSize: '9px', fontWeight: 'bold', width: '10%' }}>Qty.</th>
-//               <th style={{ border: '1px solid black', padding: '4px', fontSize: '9px', fontWeight: 'bold', width: '15%' }}>Rate</th>
-//               <th style={{ border: '1px solid black', padding: '4px', fontSize: '9px', fontWeight: 'bold', width: '15%' }}>Taxable Value</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {products.map((product, index) => (
-//               <tr key={product.id}>
-//                 <td style={{ border: '1px solid black', padding: '3px', fontSize: '9px', textAlign: 'center' }}>
-//                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
-//                     {index + 1}
-//                     {products.length > 1 && (
-//                       <button
-//                         onClick={() => removeProduct(product.id)}
-//                         style={{
-//                           background: 'none',
-//                           border: 'none',
-//                           color: '#ef4444',
-//                           cursor: 'pointer',
-//                           padding: '0'
-//                         }}
-//                       >
-//                         <Trash2 size={10} />
-//                       </button>
-//                     )}
-//                   </div>
-//                 </td>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}>
-//                   <input
-//                     type="text"
-//                     value={product.particulars}
-//                     onChange={(e) => updateProduct(product.id, 'particulars', e.target.value)}
-//                     style={{ 
-//                       width: '100%', 
-//                       border: 'none', 
-//                       fontSize: '8px',
-//                       background: 'transparent'
-//                     }}
-//                   />
-//                 </td>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}>
-//                   <input
-//                     type="text"
-//                     value={product.hsnCode}
-//                     onChange={(e) => updateProduct(product.id, 'hsnCode', e.target.value)}
-//                     style={{ 
-//                       width: '100%', 
-//                       border: 'none', 
-//                       fontSize: '8px',
-//                       background: 'transparent'
-//                     }}
-//                   />
-//                 </td>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}>
-//                   <input
-//                     type="number"
-//                     value={product.qty}
-//                     onChange={(e) => updateProduct(product.id, 'qty', e.target.value)}
-//                     style={{ 
-//                       width: '100%', 
-//                       border: 'none', 
-//                       fontSize: '8px',
-//                       background: 'transparent'
-//                     }}
-//                   />
-//                 </td>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}>
-//                   <input
-//                     type="number"
-//                     value={product.rate}
-//                     onChange={(e) => updateProduct(product.id, 'rate', e.target.value)}
-//                     style={{ 
-//                       width: '100%', 
-//                       border: 'none', 
-//                       fontSize: '8px',
-//                       background: 'transparent'
-//                     }}
-//                   />
-//                 </td>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}>
-//                   <input
-//                     type="number"
-//                     value={product.taxableValue}
-//                     onChange={(e) => updateProduct(product.id, 'taxableValue', e.target.value)}
-//                     style={{ 
-//                       width: '100%', 
-//                       border: 'none', 
-//                       fontSize: '8px',
-//                       background: 'transparent'
-//                     }}
-//                   />
-//                 </td>
-//               </tr>
-//             ))}
-//             {/* Empty rows to fill space */}
-//             {Array.from({ length: Math.max(0, 8 - products.length) }, (_, i) => (
-//               <tr key={`empty-${i}`} style={{ height: '25px' }}>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}></td>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}></td>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}></td>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}></td>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}></td>
-//                 <td style={{ border: '1px solid black', padding: '3px' }}></td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-
-
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Download, Edit2, Save, X } from 'lucide-react';
+import { Plus, Trash2, Download, Edit2, Save, X, Bold, Italic, Underline } from 'lucide-react';
 
 const Invoice = () => {
     const [companyName, setCompanyName] = useState('KUNDER & COMPANY');
 
     const [companyDetails, setCompanyDetails] = useState({
         gstin: '09DULPS6670G2ZV',
+        taxinvoice: 'TAX INVOICE',
         address: '481/B Chak Dondi, Naini, Prayagraj U. P. India- 211008',
         mobile: '9198152715',
         business: 'Deals in : All Type Of Mills, Machinary & Spare Parts Sales & Service'
@@ -605,7 +44,137 @@ const Invoice = () => {
         ifscCode: ''
     });
 
+    // Text formatting states
+    const [textFormats, setTextFormats] = useState({
+        companyName: { fontSize: 32, bold: true, italic: false, underline: false },
+        companyGstin: { fontSize: 12, bold: true, italic: false, underline: false },
+        taxInvoice: { fontSize: 18, bold: true, italic: false, underline: false },
+        companyMobile: { fontSize: 12, bold: true, italic: false, underline: false },
+        companyAddress: { fontSize: 11, bold: false, italic: false, underline: false },
+        companyBusiness: { fontSize: 11, bold: false, italic: false, underline: false },
+        tableHeaders: { fontSize: 10, bold: true, italic: false, underline: false },
+        tableContent: { fontSize: 9, bold: false, italic: false, underline: false },
+        totalsLabels: { fontSize: 9, bold: true, italic: false, underline: false },
+        totalsValues: { fontSize: 9, bold: false, italic: false, underline: false },
+        termsTitle: { fontSize: 8, bold: true, italic: false, underline: false },
+        termsContent: { fontSize: 7, bold: false, italic: false, underline: false },
+        rupeesInWords: { fontSize: 10, bold: true, italic: false, underline: false },
+        bankDetails: { fontSize: 9, bold: false, italic: false, underline: false },
+        footer: { fontSize: 8, bold: false, italic: false, underline: false }
+    });
+
     const [isEditingTax, setIsEditingTax] = useState(false);
+    const [showTextControls, setShowTextControls] = useState(false);
+
+    // Function to update text format
+    const updateTextFormat = (element, property, value) => {
+        setTextFormats(prev => ({
+            ...prev,
+            [element]: {
+                ...prev[element],
+                [property]: value
+            }
+        }));
+    };
+
+    // Function to get style object from format
+    const getTextStyle = (element, additionalStyles = {}) => {
+        const format = textFormats[element];
+        return {
+            fontSize: `${format.fontSize}px`,
+            fontWeight: format.bold ? 'bold' : 'normal',
+            fontStyle: format.italic ? 'italic' : 'normal',
+            textDecoration: format.underline ? 'underline' : 'none',
+            ...additionalStyles
+        };
+    };
+
+    // Text control component
+    const TextControl = ({ label, element }) => (
+        <div style={{
+            backgroundColor: '#f8f9fa',
+            padding: '12px',
+            borderRadius: '6px',
+            border: '1px solid #e9ecef',
+            marginBottom: '8px'
+        }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '14px' }}>{label}</div>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                {/* Font Size Slider */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '12px', minWidth: '60px' }}>Size: {textFormats[element].fontSize}px</span>
+                    <input
+                        type="range"
+                        min="6"
+                        max="48"
+                        value={textFormats[element].fontSize}
+                        onChange={(e) => updateTextFormat(element, 'fontSize', parseInt(e.target.value))}
+                        style={{ width: '100px' }}
+                    />
+                </div>
+
+                {/* Bold Toggle */}
+                <button
+                    onClick={() => updateTextFormat(element, 'bold', !textFormats[element].bold)}
+                    style={{
+                        backgroundColor: textFormats[element].bold ? '#2563eb' : '#e5e7eb',
+                        color: textFormats[element].bold ? 'white' : '#374151',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '6px 8px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '12px'
+                    }}
+                >
+                    <Bold size={14} />
+                    Bold
+                </button>
+
+                {/* Italic Toggle */}
+                <button
+                    onClick={() => updateTextFormat(element, 'italic', !textFormats[element].italic)}
+                    style={{
+                        backgroundColor: textFormats[element].italic ? '#2563eb' : '#e5e7eb',
+                        color: textFormats[element].italic ? 'white' : '#374151',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '6px 8px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '12px'
+                    }}
+                >
+                    <Italic size={14} />
+                    Italic
+                </button>
+
+                {/* Underline Toggle */}
+                <button
+                    onClick={() => updateTextFormat(element, 'underline', !textFormats[element].underline)}
+                    style={{
+                        backgroundColor: textFormats[element].underline ? '#2563eb' : '#e5e7eb',
+                        color: textFormats[element].underline ? 'white' : '#374151',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '6px 8px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '12px'
+                    }}
+                >
+                    <Underline size={14} />
+                    Underline
+                </button>
+            </div>
+        </div>
+    );
 
     // Function to convert number to words
     const numberToWords = (num) => {
@@ -680,6 +249,11 @@ const Invoice = () => {
         }
     };
 
+     const roundToNextWhole = (value) => {
+        const rounded = Number.isInteger(value) ? value : Math.ceil(value);
+        return parseFloat(rounded.toFixed(2));
+    };
+
     const updateProduct = (id, field, value) => {
         setProducts(products.map(product => {
             if (product.id === id) {
@@ -689,7 +263,7 @@ const Invoice = () => {
                 if (field === 'qty' || field === 'rate') {
                     const qty = parseFloat(field === 'qty' ? value : updatedProduct.qty) || 0;
                     const rate = parseFloat(field === 'rate' ? value : updatedProduct.rate) || 0;
-                    updatedProduct.taxableValue = qty * rate;
+                    updatedProduct.taxableValue = roundToNextWhole(qty * rate);
                 }
 
                 return updatedProduct;
@@ -697,6 +271,8 @@ const Invoice = () => {
             return product;
         }));
     };
+
+   
 
     const calculateTotals = () => {
         const totalAmount = products.reduce((sum, product) => {
@@ -707,8 +283,14 @@ const Invoice = () => {
         const sgstAmount = (totalAmount * taxDetails.sgstRate) / 100;
         const totalWithTax = totalAmount + cgstAmount + sgstAmount;
 
-        return { totalAmount, cgstAmount, sgstAmount, totalWithTax };
+        return {
+            totalAmount: roundToNextWhole(totalAmount),
+            cgstAmount: roundToNextWhole(cgstAmount),
+            sgstAmount: roundToNextWhole(sgstAmount),
+            totalWithTax: roundToNextWhole(totalWithTax)
+        };
     };
+
 
     const { totalAmount, cgstAmount, sgstAmount, totalWithTax } = calculateTotals();
 
@@ -737,11 +319,9 @@ const Invoice = () => {
                 allowTaint: true
             },
             jsPDF: {
-                // unit: '', 
                 format: 'a4',
                 orientation: 'portrait',
                 compress: true,
-
             }
         };
 
@@ -759,7 +339,7 @@ const Invoice = () => {
                 marginBottom: '20px'
             }}>
                 <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '15px' }}>Invoice Controls</h2>
-                <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '20px' }}>
                     <button
                         onClick={generatePDF}
                         style={{
@@ -853,7 +433,54 @@ const Invoice = () => {
                             </>
                         )}
                     </div>
+
+                    {/* Text Controls Toggle */}
+                    <button
+                        onClick={() => setShowTextControls(!showTextControls)}
+                        style={{
+                            backgroundColor: showTextControls ? '#ef4444' : '#8b5cf6',
+                            color: 'white',
+                            padding: '10px 20px',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            transition: 'background-color 0.2s'
+                        }}
+                    >
+                        {showTextControls ? 'Hide Text Controls' : 'Show Text Controls'}
+                    </button>
                 </div>
+
+                {/* Text Controls Panel */}
+                {showTextControls && (
+                    <div style={{
+                        backgroundColor: '#f8f9fa',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        border: '2px solid #e9ecef',
+                        marginTop: '15px'
+                    }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '15px', color: '#2563eb' }}>Text Formatting Controls</h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '15px' }}>
+                            <TextControl label="Company Name" element="companyName" />
+                            <TextControl label="Company GSTIN" element="companyGstin" />
+                            <TextControl label="Tax Invoice Title" element="taxInvoice" />
+                            <TextControl label="Company Mobile" element="companyMobile" />
+                            <TextControl label="Company Address" element="companyAddress" />
+                            <TextControl label="Company Business" element="companyBusiness" />
+                            <TextControl label="Table Headers" element="tableHeaders" />
+                            <TextControl label="Table Content" element="tableContent" />
+                            <TextControl label="Totals Labels" element="totalsLabels" />
+                            <TextControl label="Totals Values" element="totalsValues" />
+                            <TextControl label="Terms Title" element="termsTitle" />
+                            <TextControl label="Terms Content" element="termsContent" />
+                            <TextControl label="Rupees in Words" element="rupeesInWords" />
+                            <TextControl label="Bank Details" element="bankDetails" />
+                            <TextControl label="Footer Text" element="footer" />
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Invoice */}
@@ -861,16 +488,15 @@ const Invoice = () => {
                 id="invoice-content"
                 style={{
                     backgroundColor: 'white',
-                    padding: '6px',
+                    padding: '9px',
                     border: '2px solid black',
                     fontFamily: 'Arial, sans-serif',
                     fontSize: '11px',
                     lineHeight: '1',
                     width: '203mm',
-                    minHeight: '290mm',
+                    minHeight: '280mm',
                     boxSizing: 'border-box',
-                    //   margin: '0 auto'
-                    marginTop: '10px',
+                    marginTop: '7px',
                 }}
             >
                 {/* Header with GSTIN, TAX INVOICE, Mobile */}
@@ -878,80 +504,91 @@ const Invoice = () => {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    marginBottom: '5px',
-                    fontSize: '12px'
+                    marginBottom: '5px'
                 }}>
                     <div style={{ flex: '1' }}>
-                        <strong>GSTN No.: </strong>
+                        <strong style={getTextStyle('companyGstin')}>GSTN No.: </strong>
                         <input
                             type="text"
                             value={companyDetails.gstin}
                             onChange={(e) => setCompanyDetails({ ...companyDetails, gstin: e.target.value })}
                             style={{
-                                border: 'none',
-                                background: 'transparent',
-                                fontWeight: 'bold',
-                                fontSize: '12px',
-                                width: '150px',
-                                textAlign: 'center',
-                                borderBottom: '1px #999'
+                                ...getTextStyle('companyGstin', {
+                                    border: 'none',
+                                    background: 'transparent',
+                                    width: '150px',
+                                    textAlign: 'center',
+                                    borderBottom: '1px #999'
+                                })
                             }}
                         />
                     </div>
-                    <div style={{ fontSize: '18px', fontWeight: 'bold', textAlign: 'center', flex: '1' }}>
-                        TAX INVOICE
+
+                    <div style={{ textAlign: 'center', flex: '1' }}>
+                        <input
+                            type="text"
+                            value={companyDetails.taxinvoice}
+                            onChange={(e) => setCompanyDetails({ ...companyDetails, taxinvoice: e.target.value })}
+                            style={{
+                                ...getTextStyle('taxInvoice', {
+                                    border: 'none',
+                                    background: 'transparent',
+                                    borderBottom: '1px #999',
+                                    flex: '1',
+                                    textAlign: 'center'
+                                })
+                            }}
+                        />
                     </div>
                     <div style={{ flex: '1', textAlign: 'right' }}>
-                        <strong>Mob: </strong>
+                        <strong style={getTextStyle('companyMobile')}>Mob: </strong>
                         <input
                             type="text"
                             value={companyDetails.mobile}
                             onChange={(e) => setCompanyDetails({ ...companyDetails, mobile: e.target.value })}
                             style={{
-                                border: 'none',
-                                background: 'transparent',
-                                fontWeight: 'bold',
-                                fontSize: '12px',
-                                width: '100px',
-                                borderBottom: '1px #999'
+                                ...getTextStyle('companyMobile', {
+                                    border: 'none',
+                                    background: 'transparent',
+                                    width: '100px',
+                                    borderBottom: '1px #999'
+                                })
                             }}
                         />
                     </div>
                 </div>
 
                 {/* Company Name - Large and Bold */}
-                {/* <div style={{ textAlign: 'center', marginBottom: '10px' }}> */}
                 <input
                     type="text"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     style={{
-                        fontSize: '32px',
-                        fontWeight: 'bold',
-                        textAlign: 'center',
-                        border: 'none',
-                        background: 'transparent',
-                        width: '100%',
-                        //   letterSpacing: '3px',
-                        borderBottom: '10px'
+                        ...getTextStyle('companyName', {
+                            textAlign: 'center',
+                            border: 'none',
+                            background: 'transparent',
+                            width: '100%',
+                            borderBottom: '10px'
+                        })
                     }}
                 />
-                {/* </div> */}
 
                 {/* Address and Business */}
-                <div style={{ textAlign: 'center', marginBottom: '15px', fontSize: '11px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '15px' }}>
                     <div style={{ marginBottom: '5px' }}>
                         <input
                             type="text"
                             value={companyDetails.address}
                             onChange={(e) => setCompanyDetails({ ...companyDetails, address: e.target.value })}
                             style={{
-                                border: 'none',
-                                background: 'transparent',
-                                textAlign: 'center',
-                                width: '100%',
-                                fontSize: '11px',
-                                borderBottom: '1px #999'
+                                ...getTextStyle('companyAddress', {
+                                    border: 'none',
+                                    background: 'transparent',
+                                    textAlign: 'center',
+                                    width: '100%',
+                                    borderBottom: '1px #999'
+                                })
                             }}
                         />
                     </div>
@@ -961,12 +598,13 @@ const Invoice = () => {
                             value={companyDetails.business}
                             onChange={(e) => setCompanyDetails({ ...companyDetails, business: e.target.value })}
                             style={{
-                                border: 'none',
-                                background: 'transparent',
-                                textAlign: 'center',
-                                width: '100%',
-                                fontSize: '11px',
-                                borderBottom: '1px #999'
+                                ...getTextStyle('companyBusiness', {
+                                    border: 'none',
+                                    background: 'transparent',
+                                    textAlign: 'center',
+                                    width: '100%',
+                                    borderBottom: '1px #999'
+                                })
                             }}
                         />
                     </div>
@@ -979,22 +617,20 @@ const Invoice = () => {
                             <td style={{
                                 border: '1px solid black',
                                 padding: '8px',
-                                fontSize: '10px',
                                 width: '25%',
                                 verticalAlign: 'top'
                             }}>
-                                <div><strong>GSTIN No.: {companyDetails.gstin}</strong></div>
-                                <div style={{ marginTop: '5px' }}><strong>State Code: {invoiceDetails.stateCode}</strong></div>
+                                <div style={getTextStyle('tableContent', { fontWeight: 'bold' })}>GSTIN No.: {companyDetails.gstin}</div>
+                                <div style={{ ...getTextStyle('tableContent', { fontWeight: 'bold' }), marginTop: '5px' }}>State Code: {invoiceDetails.stateCode}</div>
                             </td>
                             <td style={{
                                 border: '1px solid black',
                                 padding: '8px',
-                                fontSize: '10px',
                                 width: '25%',
                                 verticalAlign: 'top'
                             }}>
-                                <div style={{ marginBottom: '5px' }}>
-                                    <strong>Tax Invoice No.:</strong>
+                                <div style={{ ...getTextStyle('tableContent', { fontWeight: 'bold' }), marginBottom: '5px' }}>
+                                    Tax Invoice No.:
                                 </div>
                                 <input
                                     type="text"
@@ -1002,46 +638,46 @@ const Invoice = () => {
                                     onChange={(e) => setInvoiceDetails({ ...invoiceDetails, invoiceNo: e.target.value })}
                                     placeholder="Enter Invoice No."
                                     style={{
-                                        width: '100%',
-                                        border: 'none',
-                                        fontSize: '10px',
-                                        borderBottom: '1px dotted #999',
-                                        background: 'transparent'
+                                        ...getTextStyle('tableContent', {
+                                            width: '100%',
+                                            border: 'none',
+                                            borderBottom: '1px dotted #999',
+                                            background: 'transparent'
+                                        })
                                     }}
                                 />
                             </td>
                             <td style={{
                                 border: '1px solid black',
                                 padding: '8px',
-                                fontSize: '10px',
                                 width: '25%',
                                 verticalAlign: 'top'
                             }}>
-                                <div style={{ marginBottom: '5px' }}>
-                                    <strong>Invoice Date:</strong>
+                                <div style={{ ...getTextStyle('tableContent', { fontWeight: 'bold' }), marginBottom: '5px' }}>
+                                    Invoice Date:
                                 </div>
                                 <input
                                     type="date"
                                     value={invoiceDetails.invoiceDate}
                                     onChange={(e) => setInvoiceDetails({ ...invoiceDetails, invoiceDate: e.target.value })}
                                     style={{
-                                        width: '100%',
-                                        border: 'none',
-                                        fontSize: '10px',
-                                        borderBottom: '1px dotted #999',
-                                        background: 'transparent'
+                                        ...getTextStyle('tableContent', {
+                                            width: '100%',
+                                            border: 'none',
+                                            borderBottom: '1px dotted #999',
+                                            background: 'transparent'
+                                        })
                                     }}
                                 />
                             </td>
                             <td style={{
                                 border: '1px solid black',
                                 padding: '8px',
-                                fontSize: '10px',
                                 width: '25%',
                                 verticalAlign: 'top'
                             }}>
-                                <div style={{ marginBottom: '5px' }}>
-                                    <strong>Mobile No.:</strong>
+                                <div style={{ ...getTextStyle('tableContent', { fontWeight: 'bold' }), marginBottom: '5px' }}>
+                                    Mobile No.:
                                 </div>
                                 <input
                                     type="text"
@@ -1049,11 +685,12 @@ const Invoice = () => {
                                     onChange={(e) => setCustomerDetails({ ...customerDetails, mobile: e.target.value })}
                                     placeholder="Customer Mobile"
                                     style={{
-                                        width: '100%',
-                                        border: 'none',
-                                        fontSize: '10px',
-                                        borderBottom: '1px dotted #999',
-                                        background: 'transparent'
+                                        ...getTextStyle('tableContent', {
+                                            width: '100%',
+                                            border: 'none',
+                                            borderBottom: '1px dotted #999',
+                                            background: 'transparent'
+                                        })
                                     }}
                                 />
                             </td>
@@ -1066,44 +703,47 @@ const Invoice = () => {
                     <div style={{
                         backgroundColor: '#f0f0f0',
                         padding: '6px',
-                        fontSize: '11px',
                         fontWeight: 'bold',
-                        borderBottom: '1px solid black'
+                        borderBottom: '1px solid black',
+                        ...getTextStyle('tableHeaders')
                     }}>
                         Invoice to (Details of Receiver)
                     </div>
-                    <div style={{ padding: '10px', fontSize: '10px' }}>
+                    <div style={{ padding: '10px' }}>
                         <div style={{ display: 'flex', marginBottom: '8px', alignItems: 'center' }}>
-                            <span style={{ fontWeight: 'bold', width: '80px', display: 'inline-block' }}>Name:</span>
+                            <span style={{ ...getTextStyle('tableContent', { fontWeight: 'bold' }), width: '80px', display: 'inline-block' }}>Name:</span>
                             <input
                                 type="text"
                                 value={customerDetails.name}
                                 onChange={(e) => setCustomerDetails({ ...customerDetails, name: e.target.value })}
                                 placeholder="Customer Name"
                                 style={{
-                                    flex: 1,
-                                    border: 'none',
-                                    fontSize: '10px',
-                                    borderBottom: '1px dotted #999',
-                                    background: 'transparent',
-                                    marginRight: '20px'
+                                    ...getTextStyle('tableContent', {
+                                        flex: 1,
+                                        border: 'none',
+                                        borderBottom: '1px dotted #999',
+                                        background: 'transparent',
+                                        marginRight: '20px'
+                                    })
                                 }}
                             />
-                            <span style={{ fontWeight: 'bold', width: '60px', display: 'inline-block' }}>GSTIN:</span>
+                            <span style={{ ...getTextStyle('tableContent', { fontWeight: 'bold' }), width: '60px', display: 'inline-block' }}>GSTIN:</span>
                             <input
                                 type="text"
                                 value={customerDetails.gstin}
                                 onChange={(e) => setCustomerDetails({ ...customerDetails, gstin: e.target.value })}
                                 placeholder="Customer GSTIN"
                                 style={{
-                                    width: '150px',
-                                    border: 'none',
-                                    fontSize: '10px',
-                                    borderBottom: '1px dotted #999',
-                                    background: 'transparent'
+                                    ...getTextStyle('tableContent', {
+                                        width: '150px',
+                                        border: 'none',
+                                        borderBottom: '1px dotted #999',
+                                        background: 'transparent'
+                                    })
                                 }}
                             />
                         </div>
+
                         <div style={{ display: 'flex', marginBottom: '8px', alignItems: 'center' }}>
                             <span style={{ fontWeight: 'bold', width: '80px', display: 'inline-block' }}>ADDRESS:</span>
                             <input
@@ -1127,12 +767,14 @@ const Invoice = () => {
                                 onChange={(e) => setCustomerDetails({ ...customerDetails, state: e.target.value })}
                                 placeholder="State"
                                 style={{
-                                    width: '80px',
-                                    border: 'none',
-                                    fontSize: '10px',
-                                    borderBottom: '1px dotted #999',
-                                    background: 'transparent',
-                                    marginRight: '10px'
+                                    ...getTextStyle('tableContent', {
+                                        width: '80px',
+                                        border: 'none',
+                                        fontSize: '10px',
+                                        borderBottom: '1px dotted #999',
+                                        background: 'transparent',
+                                        marginRight: '10px'
+                                    })
                                 }}
                             />
                             <span style={{ fontWeight: 'bold', display: 'inline-block' }}>Code:</span>
@@ -1142,11 +784,13 @@ const Invoice = () => {
                                 onChange={(e) => setCustomerDetails({ ...customerDetails, stateCode: e.target.value })}
                                 placeholder="Code"
                                 style={{
-                                    width: '50px',
-                                    border: 'none',
-                                    fontSize: '10px',
-                                    borderBottom: '1px dotted #999',
-                                    background: 'transparent'
+                                    ...getTextStyle('tableContent', {
+                                        width: '50px',
+                                        border: 'none',
+                                        fontSize: '10px',
+                                        borderBottom: '1px dotted #999',
+                                        background: 'transparent'
+                                    })
                                 }}
                             />
                         </div>
@@ -1158,11 +802,13 @@ const Invoice = () => {
                                 onChange={(e) => setCustomerDetails({ ...customerDetails, placeOfSupply: e.target.value })}
                                 placeholder="Place of Supply"
                                 style={{
-                                    flex: 1,
-                                    border: 'none',
-                                    fontSize: '10px',
-                                    borderBottom: '1px dotted #999',
-                                    background: 'transparent'
+                                    ...getTextStyle('tableContent', {
+                                        flex: 1,
+                                        border: 'none',
+                                        fontSize: '10px',
+                                        borderBottom: '1px dotted #999',
+                                        background: 'transparent'
+                                    })
                                 }}
                             />
                         </div>
@@ -1170,7 +816,7 @@ const Invoice = () => {
                 </div>
 
                 {/* Products Table */}
-                <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '10px', border: '1px solid black' }}>
+                <table style={{ ...getTextStyle('tableContent', { width: '100%', borderCollapse: 'collapse', marginBottom: '10px', border: '1px solid black' }) }}>
                     <thead>
                         <tr>
                             <th style={{ border: '1px solid black', padding: '6px', fontSize: '10px', fontWeight: 'bold', width: '8%', backgroundColor: '#f8f9fa' }}>SL. No.</th>
@@ -1187,7 +833,7 @@ const Invoice = () => {
                                 <td style={{ border: '1px solid black', padding: '5px', fontSize: '10px', textAlign: 'center', verticalAlign: 'middle' }}>
                                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
                                         {index + 1}
-                                        {products.length > 1 && (
+                                        {/* {products.length > 1 && (
                                             <button
                                                 onClick={() => removeProduct(product.id)}
                                                 style={{
@@ -1202,7 +848,7 @@ const Invoice = () => {
                                             >
                                                 <Trash2 size={12} />
                                             </button>
-                                        )}
+                                        )} */}
                                     </div>
                                 </td>
                                 <td style={{ border: '1px solid black', padding: '5px' }}>
@@ -1275,7 +921,8 @@ const Invoice = () => {
                                             border: 'none',
                                             fontSize: '9px',
                                             background: 'transparent',
-                                            textAlign: 'right'
+                                            textAlign: 'right',
+                                            fontWeight: 'bold'
                                         }}
                                     />
                                 </td>
@@ -1303,10 +950,12 @@ const Invoice = () => {
                             <div style={{ fontSize: '8px' }}>
                                 <strong>Rupees (in Word)</strong>
                                 <div style={{
-                                    marginTop: '5px',
-                                    fontSize: '10px',
-                                    fontWeight: 'bold',
-                                    textTransform: 'capitalize'
+                                    ...getTextStyle('rupeesInWords', {
+                                        marginTop: '5px',
+                                        fontSize: '10px',
+                                        fontWeight: 'bold',
+                                        textTransform: 'capitalize'
+                                    })
                                 }}>
                                     {totalWithTax > 0 ? `${numberToWords(Math.floor(totalWithTax))} Rupees ${totalWithTax % 1 > 0 ? `and ${Math.round((totalWithTax % 1) * 100)} Paisa` : ''} Only` : ''}
                                 </div>
@@ -1361,7 +1010,7 @@ const Invoice = () => {
                 </div>
 
                 {/* Bank Details */}
-                <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '8px' }}>
+                <table style={{ ...getTextStyle('bankDetails', { width: '100%', borderCollapse: 'collapse', marginBottom: '8px' }) }}>
                     <thead>
                         <tr>
                             <th colSpan="3" style={{
@@ -1427,7 +1076,7 @@ const Invoice = () => {
                 </table>
 
                 {/* Footer */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8px', marginTop: '15px' }}>
+                <div style={{ ...getTextStyle('footer', { display: 'flex', justifyContent: 'space-between', fontSize: '8px', marginTop: '15px', }) }}>
                     <div>
                         <div style={{ fontWeight: 'bold' }}>E. & O. E.</div>
                         <div>Subject to Prayagraj (Allahabad) Jurisdiction only</div>
